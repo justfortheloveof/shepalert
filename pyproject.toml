@@ -1,0 +1,57 @@
+[project]
+name = "shepalert"
+version = "0.1.0"
+description = "Notify via Bark when herdr coding agents stop being busy"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["httpx"]
+
+[project.scripts]
+shepalert = "shepalert.cli:main"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18",
+    "pytest>=8.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.6",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 120
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "ANN"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests legitimately forward `Any` to `**kwargs` and to duck-typed socket
+# stand-ins, which is the one place the ban on `Any` arguments does not apply.
+"tests/*" = ["ANN401"]
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "src"
+files = ["src", "tests"]
+strict = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_calls = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=shepalert --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["shepalert"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
